@@ -15,9 +15,21 @@ const SavedCoin = () => {
     });
   }, [user?.email]);
 
+  const coinPath = doc(db, 'users', `${user?.email}`);
+  const deleteCoin = async (passedId) => {
+    try {
+      const result = coins.filter((item) => item.id !== passedId);
+      await updateDoc(coinPath, {
+        watchList: result,
+      });
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
   return (
     <div>
-      {coins.length === 0 ? (
+      {coins?.length === 0 ? (
         <p>
           You don't have any coins saved. Please save a coin to add it to watch list.
           <Link to="/">Click here to search coins.</Link>
@@ -32,7 +44,7 @@ const SavedCoin = () => {
             </tr>
           </thead>
           <tbody>
-            {coins.map((coin) => (
+            {coins?.map((coin) => (
               <tr key={coin.id} className="h-[60px] overflow-hidden">
                 <td>{coin.rank}</td>
                 <td>
@@ -49,7 +61,7 @@ const SavedCoin = () => {
                   </Link>
                 </td>
                 <td className="pl-8">
-                  <AiOutlineClose className="cursor-pointer" />
+                  <AiOutlineClose onClick={() => deleteCoin(coin.id)} className="cursor-pointer" />
                 </td>
               </tr>
             ))}
